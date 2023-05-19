@@ -1,4 +1,5 @@
 from wsgiref.simple_server import make_server
+from reverseware import Reverseware
 
 
 def application(environ, start_response):
@@ -28,5 +29,5 @@ def application(environ, start_response):
 
 
 def start():
-    server = make_server('localhost', 8000, app=application)
+    server = make_server('localhost', 8000, app=Reverseware(application))
     server.serve_forever()

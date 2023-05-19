@@ -5,7 +5,7 @@ class Reverseware:
     That is, it should be a callable object that receives two params (environ and start_response) and then returns
     the response as an iterable.
     """
-    def __int__(self, app):
+    def __init__(self, app):
         """
         This middleware is getting the response from the app that it wraps.
 
