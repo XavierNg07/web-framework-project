@@ -33,17 +33,24 @@ class API:
             return handler
         return wrapper
 
-    def handle_request(self, request):
-        response = Response()
-
+    def find_handler(self, request_path):
         for path, handler in self.routes.items():
-            if path == request.path:
-                handler(request, response)
-                return response
-
-        self.default_response(response)
-        return response
+            if path == request_path:
+                return handler
 
     def default_response(self, response):
         response.status_code = 404
         response.text = 'Not found.'
+
+    def handle_request(self, request):
+        response = Response()
+
+        handler = self.find_handler(request_path=request.path)
+
+        if handler is not None:
+            handler(request, response)
+        else:
+            self.default_response(response)
+
+        return response
+
