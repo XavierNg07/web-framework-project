@@ -26,3 +26,7 @@ def application(environ, start_response):
 
     return [response_body.encode('utf-8')]
 
+
+def start():
+    server = make_server('localhost', 8000, app=application)
+    server.serve_forever()
