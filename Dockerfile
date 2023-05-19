@@ -17,4 +17,4 @@ RUN pip install -r /app/requirements.txt
 COPY . /app
 
 # start the application with a Gunicorn server
-CMD ["gunicorn", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8000", "app:app"]
