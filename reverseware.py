@@ -13,15 +13,13 @@ class Reverseware:
         """
         self.wrapped_app = app
 
-    def __call__(self, environ, start_response, *args, **kwargs):
+    def __call__(self, environ, start_response):
         """
         This middleware is tweaking (reversing the response) from the app.
         This is generally what middlewares are used for: tweaking the request and the response.
 
         :param environ:
         :param start_response:
-        :param args:
-        :param kwargs:
         :return:
         """
         wrapped_app_response = self.wrapped_app(environ, start_response)
