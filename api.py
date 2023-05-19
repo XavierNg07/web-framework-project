@@ -1,3 +1,4 @@
+from parse import parse
 from webob import Request, Response
 
 
@@ -31,24 +32,34 @@ class API:
         def wrapper(handler):
             self.routes[path] = handler
             return handler
-        return wrapper
 
-    def find_handler(self, request_path):
-        for path, handler in self.routes.items():
-            if path == request_path:
-                return handler
+        return wrapper
 
     def default_response(self, response):
         response.status_code = 404
         response.text = 'Not found.'
 
+    def find_handler(self, request_path):
+        """
+        Compare the path to the request path, the method tries to parse it and if there is a result,
+        it returns both the handler and keyword params as a dictionary.
+
+        :param request_path:
+        :return:
+        """
+        for path, handler in self.routes.items():
+            parse_result = parse(path, request_path)
+            if parse_result is not None:
+                return handler, parse_result.named
+        return None, None
+
     def handle_request(self, request):
         response = Response()
 
-        handler = self.find_handler(request_path=request.path)
+        handler, kwargs = self.find_handler(request_path=request.path)
 
         if handler is not None:
-            handler(request, response)
+            handler(request, response, **kwargs)
         else:
             self.default_response(response)
 
