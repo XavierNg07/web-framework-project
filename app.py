@@ -17,3 +17,20 @@ def about(request, response):
 @app.route("/hello/{name}")
 def greeting(request, response, name):
     response.text = f'Hello, {name}'
+
+
+@app.route("/sum/{num_1:d}/{num_2:d}")
+def sum(request, response, num_1, num_2):
+    """
+    Testing route whose params are given the type.
+    If you pass in a non-digit, it will not be able to parse it and our default_response will do its job.
+
+    :param request:
+    :param response:
+    :param num_1:
+    :param num_2:
+    :return:
+
+    """
+    total = int(num_1) + int(num_2)
+    response.text = f'{num_1} + {num_2} = {total}'
