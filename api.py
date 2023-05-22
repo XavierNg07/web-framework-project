@@ -29,6 +29,8 @@ class API:
         :param path:
         :return:
         """
+        assert path not in self.routes, 'Such route already exists.'
+
         def wrapper(handler):
             self.routes[path] = handler
             return handler
@@ -64,4 +66,3 @@ class API:
             self.default_response(response)
 
         return response
-
