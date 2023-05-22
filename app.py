@@ -21,11 +21,11 @@ def greeting(request, response, name):
 
 @app.route('/book')
 class BooksResource:
-    def get(self, req, res):
-        res.text = 'Books Page'
+    def get(self, request, response):
+        response.text = 'Books Page'
 
-    def post(self, req, res):
-        res.text = 'Endpoint to create a book'
+    def post(self, request, response):
+        response.text = 'Endpoint to create a book'
 
 
 @app.route('/sum/{num_1:d}/{num_2:d}')
