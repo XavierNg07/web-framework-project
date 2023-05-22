@@ -1,3 +1,4 @@
+import inspect
 from parse import parse
 from webob import Request, Response
 
@@ -56,11 +57,27 @@ class API:
         return None, None
 
     def handle_request(self, request):
+        """
+        Check if the handler is a function or if it is a class.
+        If it's a class, depending on the request method, it should call the appropriate method of the class.
+        That is, if the request method is GET it should call the get() method of the class...
+        if it is POST it should call the post() method... and so on
+
+        :param request:
+        :return:
+        """
         response = Response()
 
         handler, kwargs = self.find_handler(request_path=request.path)
 
         if handler is not None:
+            if inspect.isclass(handler):
+                handler = getattr(handler(), request.method.lower(), None)
+                # if the handler is None, it means that such function was not implemented in the class
+                # and the request method is not allowed
+                if handler is None:
+                    raise AttributeError('Method not allowed', request.method)
+
             handler(request, response, **kwargs)
         else:
             self.default_response(response)

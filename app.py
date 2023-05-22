@@ -14,12 +14,21 @@ def about(request, response):
     response.text = 'Hello from the ABOUT page'
 
 
-@app.route("/hello/{name}")
+@app.route('/hello/{name}')
 def greeting(request, response, name):
     response.text = f'Hello, {name}'
 
 
-@app.route("/sum/{num_1:d}/{num_2:d}")
+@app.route('/book')
+class BooksResource:
+    def get(self, req, res):
+        res.text = 'Books Page'
+
+    def post(self, req, res):
+        res.text = 'Endpoint to create a book'
+
+
+@app.route('/sum/{num_1:d}/{num_2:d}')
 def sum(request, response, num_1, num_2):
     """
     Testing route whose params are given the type.
