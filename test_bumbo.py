@@ -23,7 +23,7 @@ def test_bumbo_test_client_can_send_requests(api, client):
     res_text = "this is a response text"
 
     @api.route("/hey")
-    def cool(req, res):
+    def greeting(req, res):
         res.text = res_text
 
     assert client.get('http://testserver/hey').text == res_text

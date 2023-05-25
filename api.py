@@ -1,8 +1,8 @@
 import inspect
+import requests
 from parse import parse
 from webob import Request, Response
-from requests import Session as RequestsSession
-from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
+from wsgiadapter import WSGIAdapter
 
 
 class API:
@@ -95,6 +95,6 @@ class API:
         :param base_url:
         :return:
         """
-        session = RequestsSession()
-        session.mount(prefix=base_url, adapter=RequestsWSGIAdapter(self))
+        session = requests.Session()
+        session.mount(prefix=base_url, adapter=WSGIAdapter(self))
         return session
