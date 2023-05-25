@@ -43,3 +43,14 @@ def test_default_404_response(client):
 
     assert res.status_code == 404
     assert res.text == 'Not found.'
+
+
+def test_class_based_handler_get(api, client):
+    response_text = 'this is a get request'
+
+    @api.route('/book')
+    class BookResource:
+        def get(self, req, res):
+            res.text = response_text
+
+    assert client.get('http://testserver/book').text == response_text

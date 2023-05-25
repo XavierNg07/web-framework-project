@@ -20,9 +20,9 @@ def greeting(request, response, name):
 
 
 @app.route('/book')
-class BooksResource:
+class BookResource:
     def get(self, request, response):
-        response.text = 'Books Page'
+        response.text = 'Book Page'
 
     def post(self, request, response):
         response.text = 'Endpoint to create a book'
