@@ -27,3 +27,12 @@ def test_bumbo_test_client_can_send_requests(api, client):
         res.text = res_text
 
     assert client.get('http://testserver/hey').text == res_text
+
+
+def test_parameterized_route(api, client):
+    @api.route('/{name}')
+    def hello(req, res, name):
+        res.text = f'hey {name}'
+
+    assert client.get('http://testserver/xavier').text == 'hey xavier'
+    assert client.get('http://testserver/nguyen').text == 'hey nguyen'
