@@ -45,6 +45,11 @@ def sub(request, response, num_1, num_2):
     response.text = f'{num_1} - {num_2} = {diff}'
 
 
+@app.route('/template')
+def template_handler(request, response):
+    response.body = app.template('index.html', context={'name': 'Bumbo', 'title': 'Best Framework'}).encode()
+
+
 def handler(request, response):
     response.text = 'sample'
 
