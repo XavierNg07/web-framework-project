@@ -6,3 +6,4 @@ pytest-cov==4.1.0
 requests==2.30.0
 requests-wsgi-adapter==0.4.1
 WebOb==1.8.7
+whitenoise==6.4.0

@@ -5,6 +5,7 @@ from parse import parse
 from webob import Request, Response
 from wsgiadapter import WSGIAdapter
 from jinja2 import Environment, FileSystemLoader
+from whitenoise import WhiteNoise
 
 
 def default_response(response):
@@ -13,7 +14,7 @@ def default_response(response):
 
 
 class API:
-    def __init__(self, templates_dir='templates'):
+    def __init__(self, templates_dir='templates', static_dir='static'):
         """
         Define a dict called self.routes where the framework will store paths as keys and handlers as value.
         Values of that dict will look something like this
@@ -27,17 +28,23 @@ class API:
         FileSystemLoader loads templates from the file system. This loader can find templates in folders
         on the file system and is the preferred way to load them. It takes the path t the templates directory
         as a parameter
+        ---
+        To configure WhiteNoise, wrap the WSGI app and give WhiteNoise the static folder path as a parameter.
         """
         self.routes = {}
         self.templates_env = Environment(loader=FileSystemLoader(os.path.abspath(templates_dir)))
         self.exception_handler = None
+        self.whitenoise = WhiteNoise(self.wsgi_app, root=static_dir)
 
-    def __call__(self, environ, start_response):
+    def wsgi_app(self, environ, start_response):
         request = Request(environ)
 
         response = self.handle_request(request)
 
         return response(environ, start_response)
+
+    def __call__(self, environ, start_response):
+        return self.whitenoise(environ, start_response)
 
     def add_exception_handler(self, exception_handler):
         self.exception_handler = exception_handler
