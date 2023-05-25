@@ -1,8 +1,10 @@
 import inspect
+import os
 import requests
 from parse import parse
 from webob import Request, Response
 from wsgiadapter import WSGIAdapter
+from jinja2 import Environment, FileSystemLoader
 
 
 def default_response(response):
@@ -11,7 +13,7 @@ def default_response(response):
 
 
 class API:
-    def __init__(self):
+    def __init__(self, templates_dir='templates'):
         """
         Define a dict called self.routes where the framework will store paths as keys and handlers as value.
         Values of that dict will look something like this
@@ -19,8 +21,15 @@ class API:
             '/home': <function home at 0x1100a70c8>,
             '/about': <function about at 0x1101a80c3>
         }
+        ---
+        Jinja2 uses a central object called the template Environment. This environment can be configured
+        upon application initialization and templates can be loaded with the help of this environment.
+        FileSystemLoader loads templates from the file system. This loader can find templates in folders
+        on the file system and is the preferred way to load them. It takes the path t the templates directory
+        as a parameter
         """
         self.routes = {}
+        self.templates_env = Environment(loader=FileSystemLoader(os.path.abspath(templates_dir)))
 
     def __call__(self, environ, start_response):
         request = Request(environ)
@@ -89,6 +98,12 @@ class API:
             default_response(response)
 
         return response
+
+    def template(self, template_name, context=None):
+        if context is None:
+            context = {}
+
+        return self.templates_env.get_template(template_name).render(**context)
 
     def test_session(self, base_url='http://testserver'):
         """

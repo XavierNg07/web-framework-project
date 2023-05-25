@@ -1,5 +1,4 @@
 import pytest
-import requests
 
 
 def test_basic_route_adding(api):
@@ -86,3 +85,15 @@ def test_alternative_route(api, client):
     api.add_route('/alternative', home)
 
     assert client.get('http://testserver/alternative').text == response_text
+
+
+def test_template(api, client):
+    @api.route('/html')
+    def html_handler(request, response):
+        response.body = api.template('index.html', context={'title': 'Some Title', 'name': 'Some Name'}).encode()
+
+    res = client.get('http://testserver/html')
+
+    assert 'text/html' in res.headers['Content-Type']
+    assert 'Some Title' in res.text
+    assert 'Some Name' in res.text
