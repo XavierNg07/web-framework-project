@@ -1,6 +1,8 @@
 import inspect
 from parse import parse
 from webob import Request, Response
+from requests import Session as RequestsSession
+from wsgiadapter import WSGIAdapter as RequestsWSGIAdapter
 
 
 class API:
@@ -83,3 +85,16 @@ class API:
             self.default_response(response)
 
         return response
+
+    def test_session(self, base_url='http://testserver'):
+        """
+        To use the Requests WSGI Adapter, you need to mount it to a Session object.
+        That way, any request made using this test_session whose URL starts with the given prefix,
+        will use the given RequestsWSGIAdapter.
+
+        :param base_url:
+        :return:
+        """
+        session = RequestsSession()
+        session.mount(prefix=base_url, adapter=RequestsWSGIAdapter(self))
+        return session
