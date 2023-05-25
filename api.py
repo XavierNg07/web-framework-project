@@ -5,6 +5,11 @@ from webob import Request, Response
 from wsgiadapter import WSGIAdapter
 
 
+def default_response(response):
+    response.status_code = 404
+    response.text = 'Not found.'
+
+
 class API:
     def __init__(self):
         """
@@ -24,6 +29,11 @@ class API:
 
         return response(environ, start_response)
 
+    def add_route(self, path, handler):
+        assert path not in self.routes, 'Such route already exists.'
+
+        self.routes[path] = handler
+
     def route(self, path):
         """
         Take a path as an argument and in the wrapper method added this path in the self.routes dictionary
@@ -32,17 +42,11 @@ class API:
         :param path:
         :return:
         """
-        assert path not in self.routes, 'Such route already exists.'
-
         def wrapper(handler):
-            self.routes[path] = handler
+            self.add_route(path, handler)
             return handler
 
         return wrapper
-
-    def default_response(self, response):
-        response.status_code = 404
-        response.text = 'Not found.'
 
     def find_handler(self, request_path):
         """
@@ -82,7 +86,7 @@ class API:
 
             handler(request, response, **kwargs)
         else:
-            self.default_response(response)
+            default_response(response)
 
         return response
 

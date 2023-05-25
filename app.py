@@ -28,8 +28,8 @@ class BookResource:
         response.text = 'Endpoint to create a book'
 
 
-@app.route('/sum/{num_1:d}/{num_2:d}')
-def sum(request, response, num_1, num_2):
+@app.route('/sub/{num_1:d}/{num_2:d}')
+def sub(request, response, num_1, num_2):
     """
     Testing route whose params are given the type.
     If you pass in a non-digit, it will not be able to parse it and our default_response will do its job.
@@ -41,5 +41,12 @@ def sum(request, response, num_1, num_2):
     :return:
 
     """
-    total = int(num_1) + int(num_2)
-    response.text = f'{num_1} + {num_2} = {total}'
+    diff = int(num_1) - int(num_2)
+    response.text = f'{num_1} - {num_2} = {diff}'
+
+
+def handler(request, response):
+    response.text = 'sample'
+
+
+app.add_route('/sample', handler)
