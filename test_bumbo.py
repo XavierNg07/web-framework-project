@@ -36,3 +36,10 @@ def test_parameterized_route(api, client):
 
     assert client.get('http://testserver/xavier').text == 'hey xavier'
     assert client.get('http://testserver/nguyen').text == 'hey nguyen'
+
+
+def test_default_404_response(client):
+    res = client.get('http://testserver/doesnotexist')
+
+    assert res.status_code == 404
+    assert res.text == 'Not found.'
