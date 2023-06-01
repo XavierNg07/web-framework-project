@@ -38,13 +38,6 @@ class API:
         self.whitenoise = WhiteNoise(self.wsgi_app, root=static_dir)
         self.middleware = Middleware(self)
 
-    def wsgi_app(self, environ, start_response):
-        request = Request(environ)
-
-        response = self.handle_request(request)
-
-        return response(environ, start_response)
-
     def __call__(self, environ, start_response):
         """
         Treat requests for static files differently from all other requests.
@@ -64,16 +57,17 @@ class API:
 
         return self.middleware(environ, start_response)
 
-    def add_exception_handler(self, exception_handler):
-        self.exception_handler = exception_handler
+    def wsgi_app(self, environ, start_response):
+        request = Request(environ)
+
+        response = self.handle_request(request)
+
+        return response(environ, start_response)
 
     def add_route(self, path, handler):
         assert path not in self.routes, 'Such route already exists.'
 
         self.routes[path] = handler
-
-    def add_middleware(self, middleware_cls):
-        self.middleware.add(middleware_cls)
 
     def route(self, path):
         """
@@ -83,6 +77,7 @@ class API:
         :param path:
         :return:
         """
+
         def wrapper(handler):
             self.add_route(path, handler)
             return handler
@@ -137,12 +132,6 @@ class API:
 
         return response
 
-    def template(self, template_name, context=None):
-        if context is None:
-            context = {}
-
-        return self.templates_env.get_template(template_name).render(**context)
-
     def test_session(self, base_url='http://testserver'):
         """
         To use the Requests WSGI Adapter, you need to mount it to a Session object.
@@ -155,3 +144,15 @@ class API:
         session = requests.Session()
         session.mount(prefix=base_url, adapter=WSGIAdapter(self))
         return session
+
+    def template(self, template_name, context=None):
+        if context is None:
+            context = {}
+
+        return self.templates_env.get_template(template_name).render(**context)
+
+    def add_exception_handler(self, exception_handler):
+        self.exception_handler = exception_handler
+
+    def add_middleware(self, middleware_cls):
+        self.middleware.add(middleware_cls)
