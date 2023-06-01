@@ -6,6 +6,7 @@ from webob import Request, Response
 from wsgiadapter import WSGIAdapter
 from jinja2 import Environment, FileSystemLoader
 from whitenoise import WhiteNoise
+from middleware import Middleware
 
 
 def default_response(response):
@@ -16,7 +17,7 @@ def default_response(response):
 class API:
     def __init__(self, templates_dir='templates', static_dir='static'):
         """
-        Define a dict called self.routes where the framework will store paths as keys and handlers as value.
+        Define a dict called self. routes where the framework will store paths as keys and handlers as value.
         Values of that dict will look something like this
         {
             '/home': <function home at 0x1100a70c8>,
@@ -35,6 +36,7 @@ class API:
         self.templates_env = Environment(loader=FileSystemLoader(os.path.abspath(templates_dir)))
         self.exception_handler = None
         self.whitenoise = WhiteNoise(self.wsgi_app, root=static_dir)
+        self.middleware = Middleware(self)
 
     def wsgi_app(self, environ, start_response):
         request = Request(environ)
@@ -44,7 +46,23 @@ class API:
         return response(environ, start_response)
 
     def __call__(self, environ, start_response):
-        return self.whitenoise(environ, start_response)
+        """
+        Treat requests for static files differently from all other requests.
+        When a request is coming in for a static file -> call WhiteNoise.
+        For others -> call the middleware.
+
+        :param environ:
+        :param start_response:
+        :return:
+        """
+        path_info = environ['PATH_INFO']
+
+        if path_info.startswith('/static'):
+            # remove /static from the path; otherwise, WhiteNoise won't find the files
+            environ['PATH_INFO'] = path_info[len('/static'):]
+            return self.whitenoise(environ, start_response)
+
+        return self.middleware(environ, start_response)
 
     def add_exception_handler(self, exception_handler):
         self.exception_handler = exception_handler
@@ -54,9 +72,12 @@ class API:
 
         self.routes[path] = handler
 
+    def add_middleware(self, middleware_cls):
+        self.middleware.add(middleware_cls)
+
     def route(self, path):
         """
-        Take a path as an argument and in the wrapper method added this path in the self.routes dictionary
+        Take a path as an argument and in the wrapper method added this path in the self. routes dictionary
          as a key and the handler as a value.
 
         :param path:
