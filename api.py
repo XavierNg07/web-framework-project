@@ -72,7 +72,7 @@ class API:
     def route(self, path):
         """
         Take a path as an argument and in the wrapper method added this path in the self. routes dictionary
-         as a key and the handler as a value.
+        as a key and the handler as a value.
 
         :param path:
         :return:
