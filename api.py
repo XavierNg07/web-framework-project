@@ -20,8 +20,8 @@ class API:
         Define a dict called self. routes where the framework will store paths as keys and handlers as value.
         Values of that dict will look something like this
         {
-            '/home': <function home at 0x1100a70c8>,
-            '/about': <function about at 0x1101a80c3>
+            '/home': {'handler': <function home_handler at 0x1100a70c8>, 'allowed_methods': ['get']},
+            '/about': {'handler': <function about_handler at 0x1101a80c3>, 'allowed_methods': ['get', 'post']}
         }
         ---
         Jinja2 uses a central object called the template Environment. This environment can be configured
@@ -64,22 +64,26 @@ class API:
 
         return response(environ, start_response)
 
-    def add_route(self, path, handler):
+    def add_route(self, path, handler, allowed_methods=None):
         assert path not in self.routes, 'Such route already exists.'
 
-        self.routes[path] = handler
+        if allowed_methods is None:
+            allowed_methods = ['get', 'post', 'put', 'patch', 'delete', 'options']
 
-    def route(self, path):
+        self.routes[path] = {'handler': handler, 'allowed_methods': allowed_methods}
+
+    def route(self, path, allowed_methods=None):
         """
         Take a path as an argument and in the wrapper method added this path in the self. routes dictionary
         as a key and the handler as a value.
 
         :param path:
+        :param allowed_methods:
         :return:
         """
 
         def wrapper(handler):
-            self.add_route(path, handler)
+            self.add_route(path, handler, allowed_methods)
             return handler
 
         return wrapper
@@ -92,10 +96,10 @@ class API:
         :param request_path:
         :return:
         """
-        for path, handler in self.routes.items():
+        for path, handler_data in self.routes.items():
             parse_result = parse(path, request_path)
             if parse_result is not None:
-                return handler, parse_result.named
+                return handler_data, parse_result.named
         return None, None
 
     def handle_request(self, request):
@@ -110,15 +114,21 @@ class API:
         """
         response = Response()
 
-        handler, kwargs = self.find_handler(request_path=request.path)
+        handler_data, kwargs = self.find_handler(request_path=request.path)
 
         try:
-            if handler is not None:
+            if handler_data is not None:
+                handler = handler_data['handler']
+                allowed_methods = handler_data['allowed_methods']
+
                 if inspect.isclass(handler):
                     handler = getattr(handler(), request.method.lower(), None)
                     # if the handler is None, it means that such function was not implemented in the class
                     # and the request method is not allowed
                     if handler is None:
+                        raise AttributeError('Method not allowed', request.method)
+                else:
+                    if request.method.lower() not in allowed_methods:
                         raise AttributeError('Method not allowed', request.method)
 
                 handler(request, response, **kwargs)
