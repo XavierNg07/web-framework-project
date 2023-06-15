@@ -1,5 +1,5 @@
-from api import API
-from middleware import Middleware
+from bumbo.api import API
+from bumbo.middleware import Middleware
 
 app = API()
 

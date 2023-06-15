@@ -1,5 +1,5 @@
 import pytest
-from api import API
+from bumbo.api import API
 
 
 @pytest.fixture
