@@ -198,6 +198,7 @@ def test_json_response_helper(api, client):
     assert response.headers['Content-Type'] == 'application/json'
     assert json_body['name'] == 'bumbo'
 
+
 def test_html_response_helper(api, client):
     @api.route('/html')
     def html_handler(req, res):
@@ -221,3 +222,15 @@ def test_text_response_helper(api, client):
 
     assert 'text/plain' in response.headers['Content-Type']
     assert response.text == response_text
+
+
+def test_manually_setting_body(api, client):
+    @api.route('/body')
+    def text_handler(req, res):
+        res.body = b'Byte Body'
+        res.content_type = 'text/plain'
+
+    response = client.get('http://testserver/body')
+
+    assert 'text/plain' in response.headers['Content-Type']
+    assert response.text == 'Byte Body'
