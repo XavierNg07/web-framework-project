@@ -43,11 +43,26 @@ def sub(request, response, num_1, num_2):
 # def template_handler(request, response):
 #     response.body = app.template('index.html', context={'name': 'Bumbo', 'title': 'Best Framework'}).encode()
 
+@app.route('/template')
+def template_handler(request, response):
+    response.body = app.template('index.html', context={'name': 'Bumbo', 'title': 'Best Framework'})
+
+
 # @app.route('/json')
 # def json_handler(req, res):
 #     response_data = {'name': 'data', 'type': 'JSON'}
 #     res.body = json.dumps(response_data).encode()
 #     res.content_type = 'application/json'
+
+@app.route('/json')
+def json_handler(request, response):
+    response.json = {'name': 'data', 'type': 'JSON'}
+
+
+@app.route('/text')
+def text_handler(request, response):
+    response.text = 'This is a simple text'
+
 
 @app.route('/exception')
 def exception_throwing_handler(request, response):
@@ -83,11 +98,11 @@ app.add_exception_handler(custom_exception_handler)
 
 # custom middleware
 class SimpleCustomMiddleware(Middleware):
-    def process_request(self, req):
-        print('Processing request', req.url)
+    def process_request(self, request):
+        print('Processing request', request.url)
 
-    def process_response(self, req, res):
-        print('Processing response', req.url)
+    def process_response(self, request, response):
+        print('Processing response', request.url)
 
 
 app.add_middleware(SimpleCustomMiddleware)
