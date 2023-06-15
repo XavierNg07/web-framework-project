@@ -39,10 +39,15 @@ def sub(request, response, num_1, num_2):
     response.text = f'{num_1} - {num_2} = {diff}'
 
 
-@app.route('/template')
-def template_handler(request, response):
-    response.body = app.template('index.html', context={'name': 'Bumbo', 'title': 'Best Framework'}).encode()
+# @app.route('/template')
+# def template_handler(request, response):
+#     response.body = app.template('index.html', context={'name': 'Bumbo', 'title': 'Best Framework'}).encode()
 
+# @app.route('/json')
+# def json_handler(req, res):
+#     response_data = {'name': 'data', 'type': 'JSON'}
+#     res.body = json.dumps(response_data).encode()
+#     res.content_type = 'application/json'
 
 @app.route('/exception')
 def exception_throwing_handler(request, response):

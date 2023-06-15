@@ -2,11 +2,12 @@ import inspect
 import os
 import requests
 from parse import parse
-from webob import Request, Response
+from webob import Request
 from wsgiadapter import WSGIAdapter
 from jinja2 import Environment, FileSystemLoader
 from whitenoise import WhiteNoise
 from middleware import Middleware
+from response import Response
 
 
 def default_response(response):
