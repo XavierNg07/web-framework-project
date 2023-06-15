@@ -211,3 +211,13 @@ def test_html_response_helper(api, client):
 
 
 def test_text_response_helper(api, client):
+    response_text = 'Just Plain Text'
+
+    @api.route('/text')
+    def text_handler(req, res):
+        res.text = response_text
+
+    response = client.get('http://testserver/text')
+
+    assert 'text/plain' in response.headers['Content-Type']
+    assert response.text == response_text
