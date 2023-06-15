@@ -185,3 +185,29 @@ def test_allowed_methods_for_function_based_handlers(api, client):
         client.get('http://testserver/home')
 
     assert client.post('http://testserver/home').text == 'Hello from the HOME page'
+
+
+def test_json_response_helper(api, client):
+    @api.route('/json')
+    def json_handler(req, res):
+        res.json = {'name': 'bumbo'}
+
+    response = client.get('http://testserver/json')
+    json_body = response.json()
+
+    assert response.headers['Content-Type'] == 'application/json'
+    assert json_body['name'] == 'bumbo'
+
+def test_html_response_helper(api, client):
+    @api.route('/html')
+    def html_handler(req, res):
+        res.html = api.template('index.html', context={'title': 'Best Title', 'name': 'Best Name'})
+
+    response = client.get('http://testserver/html')
+
+    assert 'text/html' in response.headers['Content-Type']
+    assert 'Best Title' in response.text
+    assert 'Best Name' in response.text
+
+
+def test_text_response_helper(api, client):
