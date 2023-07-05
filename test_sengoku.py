@@ -1,6 +1,6 @@
 import pytest
-from bumbo.api import API
-from bumbo.middleware import Middleware
+from sengoku.api import API
+from sengoku.middleware import Middleware
 
 FILE_DIR = 'css'
 FILE_NAME = 'main.css'
@@ -36,7 +36,7 @@ def test_route_overlap_throws_exception(api):
             res.text = 'the HOME2 page'
 
 
-def test_bumbo_test_client_can_send_requests(api, client):
+def test_client_can_send_requests(api, client):
     res_text = "this is a response text"
 
     @api.route("/hey")
@@ -190,13 +190,13 @@ def test_allowed_methods_for_function_based_handlers(api, client):
 def test_json_response_helper(api, client):
     @api.route('/json')
     def json_handler(req, res):
-        res.json = {'name': 'bumbo'}
+        res.json = {'name': 'sengoku'}
 
     response = client.get('http://testserver/json')
     json_body = response.json()
 
     assert response.headers['Content-Type'] == 'application/json'
-    assert json_body['name'] == 'bumbo'
+    assert json_body['name'] == 'sengoku'
 
 
 def test_html_response_helper(api, client):

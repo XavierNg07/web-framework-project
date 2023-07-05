@@ -1,5 +1,5 @@
-from bumbo.api import API
-from bumbo.middleware import Middleware
+from sengoku.api import API
+from sengoku.middleware import Middleware
 
 app = API()
 
