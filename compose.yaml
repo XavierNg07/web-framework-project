@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  sengoku:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: gunicorn app:app -b 0.0.0.0:8000 --reload
+    ports:
+      - '8000'
